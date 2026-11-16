@@ -4,24 +4,23 @@
 # Lines starting with # are comments and are ignored.
 # ============================================================
 
-name=Prof. Pin Luarn
+name=Hidayah Ahmad
 
-title1=Top 2% Scientist Worldwide (2020-2026)
+title1=Upcoming Regional VP for SalesOp
 
-title2=2024 National Teaching Award Laureate
+title2=Cross-Continental Experience: Malaysia → Germany
 
-expertise=Internet Marketing, AI Applications, Agentic AI
+expertise=Process automation and data analytics
 
-education=Ph.D. in Industrial Engineering, University of Wisconsin-Madison, USA
+education=M.Sc. Digital Business Management | B.Sc. Business Engineering (Double-Degree)
 
-email=luarn@mail.ntust.edu.tw
-linkedin=https://pse.is/8nn88y
+email=bintiahm@hs-pforzheim.de | hidayah.ahmad2000@gmail.com
+linkedin=www.linkedin.com/in/hidayahahmad
 
-about1=Prof. Luarn earned his B.S. in Industrial Engineering from Tunghai University,
-about2=and his M.S. and Ph.D. in Industrial Engineering from the University of Wisconsin-Madison.
-about3=Named among the world's top 2% scientists by Stanford University & Elsevier for seven consecutive years (2020-2026).
-about4=Recipient of the 2024 Presidential National Teaching Award, Taiwan
+about1=Hidayah Ahmad earned her double degree in B.S. in Business Engineering from ESB Business School and Universiti Malaysia Pahang.
+about2=and her M.Sc. in Digital Business Management from Pforzheim Business School.
+about3=Named the best student for her bachelors in 2024.
 
-phone=+886-2-2737-6754
+phone=+1-800-NOT-YERS
 
-location=T2-409, National Taiwan University of Science and Technology, No. 43, Sec. 4, Keelung Rd., Taipei, Taiwan
+location=Ludwigsburg, Germany
