@@ -15,7 +15,7 @@ expertise=Process automation and data analytics
 education=M.Sc. Digital Business Management | B.Sc. Business Engineering (Double-Degree)
 
 email=bintiahm@hs-pforzheim.de | hidayah.ahmad2000@gmail.com
-linkedin=www.linkedin.com/in/hidayahahmad
+linkedin=https://www.linkedin.com/in/hidayahahmad/
 
 about1=Hidayah Ahmad earned her double degree in B.S. in Business Engineering from ESB Business School and Universiti Malaysia Pahang.
 about2=and her M.Sc. in Digital Business Management from Pforzheim Business School.
