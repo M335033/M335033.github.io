@@ -20,6 +20,7 @@ linkedin=https://www.linkedin.com/in/hidayahahmad/
 about1=Hidayah Ahmad earned her double degree in B.S. in Business Engineering from ESB Business School and Universiti Malaysia Pahang.
 about2=and her M.Sc. in Digital Business Management from Pforzheim Business School.
 about3=Named the best student for her bachelors in 2024.
+about4=
 
 phone=+1-800-NOT-YERS
 
