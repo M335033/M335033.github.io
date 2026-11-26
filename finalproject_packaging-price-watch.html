@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Packaging Price Watch · AI agent for contract price reviews</title>
+<meta name="description" content="A scheduled AI agent that checks packaging raw-material price indices against supplier contract triggers and keeps a dashboard up to date.">
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script>
+(function () {
+  const D = {"status": [{"id": "C-1001", "supplier": "Nordwell Karton GmbH", "item": "Corrugated shipping box", "status": "Adjust", "reason": "Aug–Oct 2026 moved +7.80% vs base Nov 2025–Jan 2026 (trigger ±5%). Price goes up from 1 Dec 2026.", "delta_pct": 7.8037, "delta_basis": "Review Nov 2026: Aug–Oct 2026", "last_delta_pct": 7.8037, "composition": "20% Paper, 80% Corrugated board", "frequency": "Quarterly", "trigger_pct": 5, "contract_start": "2026-02-01", "original_base": "Nov 2025–Jan 2026", "current_base": "Nov 2025–Jan 2026", "current_price": 412.0, "new_price": 444.15, "price_change_pct": 7.8034, "effective_from": "2026-12-01", "unit": "EUR / 1,000 pcs", "running_window": "Nov 2026–Jan 2027", "months_in_window": "0 of 3", "running_delta_pct": null, "next_review": "Feb 2027", "next_effective": "2027-03-01", "last_review": "Nov 2026", "last_result": "Adjusted (+7.80%)", "adjustments": 1, "change_since_start_pct": 7.8034, "owner": "A. Becker"}, {"id": "C-1002", "supplier": "PolyForm Packaging AG", "item": "PP food tray", "status": "Adjust", "reason": "Aug–Oct 2026 moved -6.66% vs base Jan–Mar 2026 (trigger ±5%). Price goes down from 1 Dec 2026.", "delta_pct": -6.6628, "delta_basis": "Review Nov 2026: Aug–Oct 2026", "last_delta_pct": -6.6628, "composition": "90% PP, 10% PET", "frequency": "Quarterly", "trigger_pct": 5, "contract_start": "2026-08-01", "original_base": "Jan–Mar 2026", "current_base": "Jan–Mar 2026", "current_price": 186.5, "new_price": 174.07, "price_change_pct": -6.6649, "effective_from": "2026-12-01", "unit": "EUR / 1,000 pcs", "running_window": "Nov 2026–Jan 2027", "months_in_window": "0 of 3", "running_delta_pct": null, "next_review": "Feb 2027", "next_effective": "2027-03-01", "last_review": "Nov 2026", "last_result": "Adjusted (-6.66%)", "adjustments": 1, "change_since_start_pct": -6.6649, "owner": "A. Becker"}, {"id": "C-1011", "supplier": "Rhein Multipack GmbH", "item": "Multipack sleeve", "status": "Adjust", "reason": "Aug–Oct 2026 moved +5.12% vs base Aug–Oct 2025 (trigger ±5%). Price goes up from 1 Dec 2026.", "delta_pct": 5.1153, "delta_basis": "Review Nov 2026: Aug–Oct 2026", "last_delta_pct": 5.1153, "composition": "50% Paper, 30% Corrugated board, 20% PP", "frequency": "Quarterly", "trigger_pct": 5, "contract_start": "2025-11-01", "original_base": "Aug–Oct 2025", "current_base": "Aug–Oct 2025", "current_price": 129.0, "new_price": 135.6, "price_change_pct": 5.1163, "effective_from": "2026-12-01", "unit": "EUR / 1,000 pcs", "running_window": "Nov 2026–Jan 2027", "months_in_window": "0 of 3", "running_delta_pct": null, "next_review": "Feb 2027", "next_effective": "2027-03-01", "last_review": "Nov 2026", "last_result": "Adjusted (+5.12%)", "adjustments": 1, "change_since_start_pct": 5.1163, "owner": "M. Yilmaz"}, {"id": "C-1003", "supplier": "FlexiLam Europe S.A.", "item": "Laminated coffee pouch", "status": "Watch", "reason": "Running window Sep–Oct 2026 (2 of 3 months) is at +5.62% vs base Apr–Jun 2026 (trigger ±5%).", "delta_pct": 5.624, "delta_basis": "Running Sep–Oct 2026 (2/3 months)", "last_delta_pct": null, "composition": "20% Paper, 50% LDPE film, 30% Aluminium foil", "frequency": "Quarterly", "trigger_pct": 5, "contract_start": "2026-09-01", "original_base": "Apr–Jun 2026", "current_base": "Apr–Jun 2026", "current_price": 98.4, "new_price": null, "price_change_pct": null, "effective_from": null, "unit": "EUR / 1,000 pcs", "running_window": "Sep–Nov 2026", "months_in_window": "2 of 3", "running_delta_pct": 5.624, "next_review": "Dec 2026", "next_effective": "2027-01-01", "last_review": null, "last_result": null, "adjustments": 0, "change_since_start_pct": 0.0, "owner": "M. Yilmaz"}, {"id": "C-1005", "supplier": "Papyra Folding Cartons", "item": "Printed folding carton", "status": "Watch", "reason": "Running window Oct 2026 (1 of 3 months) is at +6.34% vs base Jan–Mar 2026 (trigger ±5%).", "delta_pct": 6.3428, "delta_basis": "Running Oct 2026 (1/3 months)", "last_delta_pct": 4.9933, "composition": "60% Paper, 40% LDPE film", "frequency": "Quarterly", "trigger_pct": 5, "contract_start": "2026-07-01", "original_base": "Jan–Mar 2026", "current_base": "Jan–Mar 2026", "current_price": 233.0, "new_price": null, "price_change_pct": null, "effective_from": null, "unit": "EUR / 1,000 pcs", "running_window": "Oct–Dec 2026", "months_in_window": "1 of 3", "running_delta_pct": 6.3428, "next_review": "Jan 2027", "next_effective": "2027-02-01", "last_review": "Oct 2026", "last_result": "No change (+4.99%)", "adjustments": 0, "change_since_start_pct": 0.0, "owner": "H. Ahmad"}, {"id": "C-1012", "supplier": "BlisterTech Pharma Pack", "item": "PET/alu blister", "status": "Watch", "reason": "Running window Oct 2026 (1 of 3 months) is at +5.62% vs base Jan–Mar 2026 (trigger ±7%).", "delta_pct": 5.6172, "delta_basis": "Running Oct 2026 (1/3 months)", "last_delta_pct": 3.2017, "composition": "60% PET, 40% Aluminium foil", "frequency": "Quarterly", "trigger_pct": 7, "contract_start": "2026-04-01", "original_base": "Jan–Mar 2026", "current_base": "Jan–Mar 2026", "current_price": 47.6, "new_price": null, "price_change_pct": null, "effective_from": null, "unit": "EUR / 1,000 pcs", "running_window": "Oct–Dec 2026", "months_in_window": "1 of 3", "running_delta_pct": 5.6172, "next_review": "Jan 2027", "next_effective": "2027-02-01", "last_review": "Oct 2026", "last_result": "No change (+3.20%)", "adjustments": 0, "change_since_start_pct": 0.0, "owner": "H. Ahmad"}, {"id": "C-1004", "supplier": "Clearform PET GmbH", "item": "PET bottle preform", "status": "OK", "reason": "Running window at +0.50% after 4 of 6 months; trigger ±5%.", "delta_pct": 0.4995, "delta_basis": "Running Jul–Oct 2026 (4/6 months)", "last_delta_pct": 0.0167, "composition": "100% PET", "frequency": "Bi-annual", "trigger_pct": 5, "contract_start": "2026-01-01", "original_base": "Oct–Dec 2025", "current_base": "Oct–Dec 2025", "current_price": 61.2, "new_price": null, "price_change_pct": null, "effective_from": null, "unit": "EUR / 1,000 pcs", "running_window": "Jul–Dec 2026", "months_in_window": "4 of 6", "running_delta_pct": 0.4995, "next_review": "Jan 2027", "next_effective": "2027-02-01", "last_review": "Jul 2026", "last_result": "No change (+0.02%)", "adjustments": 0, "change_since_start_pct": 0.0, "owner": "M. Yilmaz"}, {"id": "C-1006", "supplier": "StretchPro Films Ltd", "item": "Pallet shrink film", "status": "OK", "reason": "Running window at +2.31% after 10 of 12 months; trigger ±5%.", "delta_pct": 2.3098, "delta_basis": "Running Jan–Oct 2026 (10/12 months)", "last_delta_pct": null, "composition": "100% LDPE film", "frequency": "Annual", "trigger_pct": 5, "contract_start": "2026-01-01", "original_base": "Jan–Mar 2026", "current_base": "Jan–Mar 2026", "current_price": 2.35, "new_price": null, "price_change_pct": null, "effective_from": null, "unit": "EUR / kg", "running_window": "Jan–Dec 2026", "months_in_window": "10 of 12", "running_delta_pct": 2.3098, "next_review": "Jan 2027", "next_effective": "2027-02-01", "last_review": null, "last_result": null, "adjustments": 0, "change_since_start_pct": 0.0, "owner": "H. Ahmad"}, {"id": "C-1007", "supplier": "Alutec Closures GmbH", "item": "Aluminium yoghurt lid", "status": "OK", "reason": "Running window at +4.63% after 10 of 12 months; trigger ±6%.", "delta_pct": 4.6329, "delta_basis": "Running Jan–Oct 2026 (10/12 months)", "last_delta_pct": 1.2945, "composition": "30% PP, 70% Aluminium foil", "frequency": "Annual", "trigger_pct": 6, "contract_start": "2025-01-01", "original_base": "Jan–Mar 2025", "current_base": "Jan–Mar 2025", "current_price": 14.8, "new_price": null, "price_change_pct": null, "effective_from": null, "unit": "EUR / 1,000 pcs", "running_window": "Jan–Dec 2026", "months_in_window": "10 of 12", "running_delta_pct": 4.6329, "next_review": "Jan 2027", "next_effective": "2027-02-01", "last_review": "Jan 2026", "last_result": "No change (+1.29%)", "adjustments": 0, "change_since_start_pct": 0.0, "owner": "A. Becker"}, {"id": "C-1008", "supplier": "Kraftwerk Paper Bags", "item": "Kraft paper carrier bag", "status": "OK", "reason": "Running window at +1.38% after 1 of 3 months; trigger ±3%.", "delta_pct": 1.3793, "delta_basis": "Running Oct 2026 (1/3 months)", "last_delta_pct": 3.1869, "composition": "100% Paper", "frequency": "Quarterly", "trigger_pct": 3, "contract_start": "2025-01-01", "original_base": "Jan–Mar 2025", "current_base": "Jul–Sep 2026", "current_price": 78.67, "new_price": null, "price_change_pct": null, "effective_from": null, "unit": "EUR / 1,000 pcs", "running_window": "Oct–Dec 2026", "months_in_window": "1 of 3", "running_delta_pct": 1.3793, "next_review": "Jan 2027", "next_effective": "2027-02-01", "last_review": "Oct 2026", "last_result": "Adjusted (+3.19%)", "adjustments": 3, "change_since_start_pct": 10.8028, "owner": "H. Ahmad"}, {"id": "C-1009", "supplier": "Mehrweg Systems GmbH", "item": "PP reusable crate", "status": "OK", "reason": "Reviewed Nov 2026: May–Oct 2026 at -4.89% vs base Nov 2025–Jan 2026, below ±8%. No change.", "delta_pct": -4.8861, "delta_basis": "Review Nov 2026: May–Oct 2026", "last_delta_pct": -4.8861, "composition": "15% LDPE film, 85% PP", "frequency": "Bi-annual", "trigger_pct": 8, "contract_start": "2026-05-01", "original_base": "Nov 2025–Jan 2026", "current_base": "Nov 2025–Jan 2026", "current_price": 3.95, "new_price": null, "price_change_pct": null, "effective_from": null, "unit": "EUR / pc", "running_window": "Nov 2026–Apr 2027", "months_in_window": "0 of 6", "running_delta_pct": null, "next_review": "May 2027", "next_effective": "2027-06-01", "last_review": "Nov 2026", "last_result": "No change (-4.89%)", "adjustments": 0, "change_since_start_pct": 0.0, "owner": "M. Yilmaz"}, {"id": "C-1010", "supplier": "Nordwell Karton GmbH", "item": "Display tray (new)", "status": "Not started", "reason": "Starts Jan 2027; first review Apr 2027.", "delta_pct": null, "delta_basis": "No data yet", "last_delta_pct": null, "composition": "30% Paper, 70% Corrugated board", "frequency": "Quarterly", "trigger_pct": 5, "contract_start": "2027-01-01", "original_base": "Jul–Sep 2026", "current_base": "Jul–Sep 2026", "current_price": 158.0, "new_price": null, "price_change_pct": null, "effective_from": null, "unit": "EUR / 1,000 pcs", "running_window": "Jan–Mar 2027", "months_in_window": "0 of 3", "running_delta_pct": null, "next_review": "Apr 2027", "next_effective": "2027-05-01", "last_review": null, "last_result": null, "adjustments": 0, "change_since_start_pct": 0.0, "owner": "A. Becker"}], "history": [{"id": "C-1001", "cycle_no": 1, "window": "Feb–Apr 2026", "window_start": "2026-02", "window_end": "2026-04", "base": "Nov 2025–Jan 2026", "delta_pct": 1.3795, "trigger_pct": 5.0, "result": "No change", "review_month": "2026-05", "review_label": "May 2026", "effective_from": null, "price_before": 412.0, "price_after": 412.0}, {"id": "C-1001", "cycle_no": 2, "window": "May–Jul 2026", "window_start": "2026-05", "window_end": "2026-07", "base": "Nov 2025–Jan 2026", "delta_pct": 4.4179, "trigger_pct": 5.0, "result": "No change", "review_month": "2026-08", "review_label": "Aug 2026", "effective_from": null, "price_before": 412.0, "price_after": 412.0}, {"id": "C-1001", "cycle_no": 3, "window": "Aug–Oct 2026", "window_start": "2026-08", "window_end": "2026-10", "base": "Nov 2025–Jan 2026", "delta_pct": 7.8037, "trigger_pct": 5.0, "result": "Adjusted", "review_month": "2026-11", "review_label": "Nov 2026", "effective_from": "2026-12-01", "price_before": 412.0, "price_after": 444.15}, {"id": "C-1002", "cycle_no": 1, "window": "Aug–Oct 2026", "window_start": "2026-08", "window_end": "2026-10", "base": "Jan–Mar 2026", "delta_pct": -6.6628, "trigger_pct": 5.0, "result": "Adjusted", "review_month": "2026-11", "review_label": "Nov 2026", "effective_from": "2026-12-01", "price_before": 186.5, "price_after": 174.07}, {"id": "C-1004", "cycle_no": 1, "window": "Jan–Jun 2026", "window_start": "2026-01", "window_end": "2026-06", "base": "Oct–Dec 2025", "delta_pct": 0.0167, "trigger_pct": 5.0, "result": "No change", "review_month": "2026-07", "review_label": "Jul 2026", "effective_from": null, "price_before": 61.2, "price_after": 61.2}, {"id": "C-1005", "cycle_no": 1, "window": "Jul–Sep 2026", "window_start": "2026-07", "window_end": "2026-09", "base": "Jan–Mar 2026", "delta_pct": 4.9933, "trigger_pct": 5.0, "result": "No change", "review_month": "2026-10", "review_label": "Oct 2026", "effective_from": null, "price_before": 233.0, "price_after": 233.0}, {"id": "C-1007", "cycle_no": 1, "window": "Jan–Dec 2025", "window_start": "2025-01", "window_end": "2025-12", "base": "Jan–Mar 2025", "delta_pct": 1.2945, "trigger_pct": 6.0, "result": "No change", "review_month": "2026-01", "review_label": "Jan 2026", "effective_from": null, "price_before": 14.8, "price_after": 14.8}, {"id": "C-1008", "cycle_no": 1, "window": "Jan–Mar 2025", "window_start": "2025-01", "window_end": "2025-03", "base": "Jan–Mar 2025", "delta_pct": 0.0, "trigger_pct": 3.0, "result": "No change", "review_month": "2025-04", "review_label": "Apr 2025", "effective_from": null, "price_before": 71.0, "price_after": 71.0}, {"id": "C-1008", "cycle_no": 2, "window": "Apr–Jun 2025", "window_start": "2025-04", "window_end": "2025-06", "base": "Jan–Mar 2025", "delta_pct": 1.3621, "trigger_pct": 3.0, "result": "No change", "review_month": "2025-07", "review_label": "Jul 2025", "effective_from": null, "price_before": 71.0, "price_after": 71.0}, {"id": "C-1008", "cycle_no": 3, "window": "Jul–Sep 2025", "window_start": "2025-07", "window_end": "2025-09", "base": "Jan–Mar 2025", "delta_pct": 2.2591, "trigger_pct": 3.0, "result": "No change", "review_month": "2025-10", "review_label": "Oct 2025", "effective_from": null, "price_before": 71.0, "price_after": 71.0}, {"id": "C-1008", "cycle_no": 4, "window": "Oct–Dec 2025", "window_start": "2025-10", "window_end": "2025-12", "base": "Jan–Mar 2025", "delta_pct": 3.3887, "trigger_pct": 3.0, "result": "Adjusted", "review_month": "2026-01", "review_label": "Jan 2026", "effective_from": "2026-02-01", "price_before": 71.0, "price_after": 73.41}, {"id": "C-1008", "cycle_no": 5, "window": "Jan–Mar 2026", "window_start": "2026-01", "window_end": "2026-03", "base": "Oct–Dec 2025", "delta_pct": 1.4781, "trigger_pct": 3.0, "result": "No change", "review_month": "2026-04", "review_label": "Apr 2026", "effective_from": null, "price_before": 73.41, "price_after": 73.41}, {"id": "C-1008", "cycle_no": 6, "window": "Apr–Jun 2026", "window_start": "2026-04", "window_end": "2026-06", "base": "Oct–Dec 2025", "delta_pct": 3.856, "trigger_pct": 3.0, "result": "Adjusted", "review_month": "2026-07", "review_label": "Jul 2026", "effective_from": "2026-08-01", "price_before": 73.41, "price_after": 76.24}, {"id": "C-1008", "cycle_no": 7, "window": "Jul–Sep 2026", "window_start": "2026-07", "window_end": "2026-09", "base": "Apr–Jun 2026", "delta_pct": 3.1869, "trigger_pct": 3.0, "result": "Adjusted", "review_month": "2026-10", "review_label": "Oct 2026", "effective_from": "2026-11-01", "price_before": 76.24, "price_after": 78.67}, {"id": "C-1009", "cycle_no": 1, "window": "May–Oct 2026", "window_start": "2026-05", "window_end": "2026-10", "base": "Nov 2025–Jan 2026", "delta_pct": -4.8861, "trigger_pct": 8.0, "result": "No change", "review_month": "2026-11", "review_label": "Nov 2026", "effective_from": null, "price_before": 3.95, "price_after": 3.95}, {"id": "C-1011", "cycle_no": 1, "window": "Nov 2025–Jan 2026", "window_start": "2025-11", "window_end": "2026-01", "base": "Aug–Oct 2025", "delta_pct": 0.5968, "trigger_pct": 5.0, "result": "No change", "review_month": "2026-02", "review_label": "Feb 2026", "effective_from": null, "price_before": 129.0, "price_after": 129.0}, {"id": "C-1011", "cycle_no": 2, "window": "Feb–Apr 2026", "window_start": "2026-02", "window_end": "2026-04", "base": "Aug–Oct 2025", "delta_pct": 1.3812, "trigger_pct": 5.0, "result": "No change", "review_month": "2026-05", "review_label": "May 2026", "effective_from": null, "price_before": 129.0, "price_after": 129.0}, {"id": "C-1011", "cycle_no": 3, "window": "May–Jul 2026", "window_start": "2026-05", "window_end": "2026-07", "base": "Aug–Oct 2025", "delta_pct": 3.2686, "trigger_pct": 5.0, "result": "No change", "review_month": "2026-08", "review_label": "Aug 2026", "effective_from": null, "price_before": 129.0, "price_after": 129.0}, {"id": "C-1011", "cycle_no": 4, "window": "Aug–Oct 2026", "window_start": "2026-08", "window_end": "2026-10", "base": "Aug–Oct 2025", "delta_pct": 5.1153, "trigger_pct": 5.0, "result": "Adjusted", "review_month": "2026-11", "review_label": "Nov 2026", "effective_from": "2026-12-01", "price_before": 129.0, "price_after": 135.6}, {"id": "C-1012", "cycle_no": 1, "window": "Apr–Jun 2026", "window_start": "2026-04", "window_end": "2026-06", "base": "Jan–Mar 2026", "delta_pct": 0.7407, "trigger_pct": 7.0, "result": "No change", "review_month": "2026-07", "review_label": "Jul 2026", "effective_from": null, "price_before": 47.6, "price_after": 47.6}, {"id": "C-1012", "cycle_no": 2, "window": "Jul–Sep 2026", "window_start": "2026-07", "window_end": "2026-09", "base": "Jan–Mar 2026", "delta_pct": 3.2017, "trigger_pct": 7.0, "result": "No change", "review_month": "2026-10", "review_label": "Oct 2026", "effective_from": null, "price_before": 47.6, "price_after": 47.6}], "detail": [{"id": "C-1001", "focus": "Decision: Aug–Oct 2026 vs Nov 2025–Jan 2026", "kind": "decision", "material": "Paper", "share_pct": 20.0, "base_avg": 104.2333, "window_avg": 112.0667, "change_pct": 7.5152, "contribution_pp": 1.503}, {"id": "C-1001", "focus": "Decision: Aug–Oct 2026 vs Nov 2025–Jan 2026", "kind": "decision", "material": "Corrugated board", "share_pct": 80.0, "base_avg": 102.0, "window_avg": 110.0333, "change_pct": 7.8758, "contribution_pp": 6.3007}, {"id": "C-1002", "focus": "Decision: Aug–Oct 2026 vs Jan–Mar 2026", "kind": "decision", "material": "PP", "share_pct": 90.0, "base_avg": 95.4, "window_avg": 88.2667, "change_pct": -7.4773, "contribution_pp": -6.7296}, {"id": "C-1002", "focus": "Decision: Aug–Oct 2026 vs Jan–Mar 2026", "kind": "decision", "material": "PET", "share_pct": 10.0, "base_avg": 99.8333, "window_avg": 100.5, "change_pct": 0.6678, "contribution_pp": 0.0668}, {"id": "C-1003", "focus": "Running: Sep–Oct 2026 (2/3 months) vs Apr–Jun 2026", "kind": "running", "material": "Paper", "share_pct": 20.0, "base_avg": 107.7333, "window_avg": 112.45, "change_pct": 4.3781, "contribution_pp": 0.8756}, {"id": "C-1003", "focus": "Running: Sep–Oct 2026 (2/3 months) vs Apr–Jun 2026", "kind": "running", "material": "LDPE film", "share_pct": 50.0, "base_avg": 99.9667, "window_avg": 103.0, "change_pct": 3.0343, "contribution_pp": 1.5172}, {"id": "C-1003", "focus": "Running: Sep–Oct 2026 (2/3 months) vs Apr–Jun 2026", "kind": "running", "material": "Aluminium foil", "share_pct": 30.0, "base_avg": 107.7, "window_avg": 119.3, "change_pct": 10.7707, "contribution_pp": 3.2312}, {"id": "C-1004", "focus": "Running: Jul–Oct 2026 (4/6 months) vs Oct–Dec 2025", "kind": "running", "material": "PET", "share_pct": 100.0, "base_avg": 100.1, "window_avg": 100.6, "change_pct": 0.4995, "contribution_pp": 0.4995}, {"id": "C-1005", "focus": "Running: Oct 2026 (1/3 months) vs Jan–Mar 2026", "kind": "running", "material": "Paper", "share_pct": 60.0, "base_avg": 105.2667, "window_avg": 112.7, "change_pct": 7.0614, "contribution_pp": 4.2369}, {"id": "C-1005", "focus": "Running: Oct 2026 (1/3 months) vs Jan–Mar 2026", "kind": "running", "material": "LDPE film", "share_pct": 40.0, "base_avg": 98.1333, "window_avg": 103.3, "change_pct": 5.2649, "contribution_pp": 2.106}, {"id": "C-1006", "focus": "Running: Jan–Oct 2026 (10/12 months) vs Jan–Mar 2026", "kind": "running", "material": "LDPE film", "share_pct": 100.0, "base_avg": 98.1333, "window_avg": 100.4, "change_pct": 2.3098, "contribution_pp": 2.3098}, {"id": "C-1007", "focus": "Running: Jan–Oct 2026 (10/12 months) vs Jan–Mar 2025", "kind": "running", "material": "PP", "share_pct": 30.0, "base_avg": 99.6, "window_avg": 91.98, "change_pct": -7.6506, "contribution_pp": -2.2952}, {"id": "C-1007", "focus": "Running: Jan–Oct 2026 (10/12 months) vs Jan–Mar 2025", "kind": "running", "material": "Aluminium foil", "share_pct": 70.0, "base_avg": 100.5667, "window_avg": 110.52, "change_pct": 9.8972, "contribution_pp": 6.9281}, {"id": "C-1008", "focus": "Running: Oct 2026 (1/3 months) vs Jul–Sep 2026", "kind": "running", "material": "Paper", "share_pct": 100.0, "base_avg": 111.1667, "window_avg": 112.7, "change_pct": 1.3793, "contribution_pp": 1.3793}, {"id": "C-1009", "focus": "Decision: May–Oct 2026 vs Nov 2025–Jan 2026", "kind": "decision", "material": "LDPE film", "share_pct": 15.0, "base_avg": 96.8333, "window_avg": 101.7333, "change_pct": 5.0602, "contribution_pp": 0.759}, {"id": "C-1009", "focus": "Decision: May–Oct 2026 vs Nov 2025–Jan 2026", "kind": "decision", "material": "PP", "share_pct": 85.0, "base_avg": 96.3667, "window_avg": 89.9667, "change_pct": -6.6413, "contribution_pp": -5.6451}, {"id": "C-1011", "focus": "Decision: Aug–Oct 2026 vs Aug–Oct 2025", "kind": "decision", "material": "Paper", "share_pct": 50.0, "base_avg": 102.9333, "window_avg": 112.0667, "change_pct": 8.8731, "contribution_pp": 4.4365}, {"id": "C-1011", "focus": "Decision: Aug–Oct 2026 vs Aug–Oct 2025", "kind": "decision", "material": "Corrugated board", "share_pct": 30.0, "base_avg": 101.4, "window_avg": 110.0333, "change_pct": 8.5141, "contribution_pp": 2.5542}, {"id": "C-1011", "focus": "Decision: Aug–Oct 2026 vs Aug–Oct 2025", "kind": "decision", "material": "PP", "share_pct": 20.0, "base_avg": 97.4, "window_avg": 88.2667, "change_pct": -9.3771, "contribution_pp": -1.8754}, {"id": "C-1012", "focus": "Running: Oct 2026 (1/3 months) vs Jan–Mar 2026", "kind": "running", "material": "PET", "share_pct": 60.0, "base_avg": 99.8333, "window_avg": 100.4, "change_pct": 0.5676, "contribution_pp": 0.3406}, {"id": "C-1012", "focus": "Running: Oct 2026 (1/3 months) vs Jan–Mar 2026", "kind": "running", "material": "Aluminium foil", "share_pct": 40.0, "base_avg": 106.6333, "window_avg": 120.7, "change_pct": 13.1916, "contribution_pp": 5.2766}], "index": [{"month": "2025-01", "Paper": 100.0, "Corrugated board": 100.0, "LDPE film": 100.0, "PP": 100.0, "PET": 100.0, "Aluminium foil": 100.0}, {"month": "2025-02", "Paper": 100.6, "Corrugated board": 99.9, "LDPE film": 99.4, "PP": 99.4, "PET": 100.1, "Aluminium foil": 100.5}, {"month": "2025-03", "Paper": 100.4, "Corrugated board": 100.2, "LDPE film": 99.0, "PP": 99.4, "PET": 100.3, "Aluminium foil": 101.2}, {"month": "2025-04", "Paper": 101.3, "Corrugated board": 100.2, "LDPE film": 98.5, "PP": 99.2, "PET": 100.6, "Aluminium foil": 101.4}, {"month": "2025-05", "Paper": 101.8, "Corrugated board": 100.6, "LDPE film": 97.5, "PP": 98.4, "PET": 101.2, "Aluminium foil": 102.3}, {"month": "2025-06", "Paper": 102.0, "Corrugated board": 101.1, "LDPE film": 97.2, "PP": 98.7, "PET": 101.2, "Aluminium foil": 102.8}, {"month": "2025-07", "Paper": 102.4, "Corrugated board": 101.2, "LDPE film": 96.9, "PP": 98.1, "PET": 101.6, "Aluminium foil": 103.0}, {"month": "2025-08", "Paper": 102.4, "Corrugated board": 101.1, "LDPE film": 95.8, "PP": 97.6, "PET": 100.9, "Aluminium foil": 103.7}, {"month": "2025-09", "Paper": 103.0, "Corrugated board": 101.4, "LDPE film": 95.5, "PP": 97.3, "PET": 100.7, "Aluminium foil": 104.7}, {"month": "2025-10", "Paper": 103.4, "Corrugated board": 101.7, "LDPE film": 94.8, "PP": 97.3, "PET": 100.3, "Aluminium foil": 104.8}, {"month": "2025-11", "Paper": 104.0, "Corrugated board": 101.9, "LDPE film": 96.0, "PP": 96.9, "PET": 100.4, "Aluminium foil": 105.6}, {"month": "2025-12", "Paper": 103.8, "Corrugated board": 101.7, "LDPE film": 96.9, "PP": 96.3, "PET": 99.6, "Aluminium foil": 106.3}, {"month": "2026-01", "Paper": 104.9, "Corrugated board": 102.4, "LDPE film": 97.6, "PP": 95.9, "PET": 99.8, "Aluminium foil": 106.3}, {"month": "2026-02", "Paper": 105.1, "Corrugated board": 102.8, "LDPE film": 98.0, "PP": 95.3, "PET": 99.9, "Aluminium foil": 106.9}, {"month": "2026-03", "Paper": 105.8, "Corrugated board": 103.3, "LDPE film": 98.8, "PP": 95.0, "PET": 99.8, "Aluminium foil": 106.7}, {"month": "2026-04", "Paper": 106.2, "Corrugated board": 104.1, "LDPE film": 99.2, "PP": 93.8, "PET": 100.1, "Aluminium foil": 107.3}, {"month": "2026-05", "Paper": 108.0, "Corrugated board": 105.2, "LDPE film": 100.2, "PP": 93.0, "PET": 100.4, "Aluminium foil": 107.8}, {"month": "2026-06", "Paper": 109.0, "Corrugated board": 106.4, "LDPE film": 100.5, "PP": 91.7, "PET": 100.7, "Aluminium foil": 108.0}, {"month": "2026-07", "Paper": 110.0, "Corrugated board": 107.8, "LDPE film": 101.8, "PP": 90.3, "PET": 100.9, "Aluminium foil": 109.8}, {"month": "2026-08", "Paper": 111.3, "Corrugated board": 108.9, "LDPE film": 101.9, "PP": 89.4, "PET": 100.8, "Aluminium foil": 113.8}, {"month": "2026-09", "Paper": 112.2, "Corrugated board": 109.9, "LDPE film": 102.7, "PP": 88.2, "PET": 100.3, "Aluminium foil": 117.9}, {"month": "2026-10", "Paper": 112.7, "Corrugated board": 111.3, "LDPE film": 103.3, "PP": 87.2, "PET": 100.4, "Aluminium foil": 120.7}], "checks": [], "run": [{"run_at": "2026-11-26T13:32:52+00:00", "latest_index_month": "2026-10", "latest_index_label": "Oct 2026", "review_cycle": "Nov 2026", "effective_from": "2026-12-01", "contracts": 12, "issues": 0, "count_adjust": 3, "count_watch": 3, "count_ok": 5, "count_not_started": 1, "count_data_error": 0, "changes": "none"}]}, C = {"status": ["id", "supplier", "item", "status", "reason", "delta_pct", "delta_basis", "last_delta_pct", "composition", "frequency", "trigger_pct", "contract_start", "original_base", "current_base", "current_price", "new_price", "price_change_pct", "effective_from", "unit", "running_window", "months_in_window", "running_delta_pct", "next_review", "next_effective", "last_review", "last_result", "adjustments", "change_since_start_pct", "owner"], "history": ["id", "cycle_no", "window", "window_start", "window_end", "base", "delta_pct", "trigger_pct", "result", "review_month", "review_label", "effective_from", "price_before", "price_after"], "detail": ["id", "focus", "kind", "material", "share_pct", "base_avg", "window_avg", "change_pct", "contribution_pp"], "index": ["month", "Paper", "Corrugated board", "LDPE film", "PP", "PET", "Aluminium foil"], "checks": [], "run": ["run_at", "latest_index_month", "latest_index_label", "review_cycle", "effective_from", "contracts", "issues", "count_adjust", "count_watch", "count_ok", "count_not_started", "count_data_error", "changes"]}, draws = {};
+  const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  window.dash = {
+    colors: ['#2f6fd0', '#d9822b', '#2f9e6f', '#8a5bd1', '#c9507d', '#3f9db8'],
+    data: (id) => ({ status: 'ok', data: D[id] || [], columns: C[id] || [] }),
+    draw: (name, fn) => {
+      if (fn) { draws[name] = fn; return; }
+      const f = draws[name]; if (!f) return;
+      document.querySelectorAll('[data-draw="' + name + '"]').forEach((el) => { try { f(el); } catch (e) { console.error(name, e); } });
+    },
+    onData: (fn) => fn(), params: () => ({}), setParams() {}, resetParams() {}, setLink() {}, refresh() {},
+  };
+  window.__drawAll = () => Object.keys(draws).forEach((n) => window.dash.draw(n));
+})();
+</script>
+<style>
+:root {
+  --color-fg: #1d1d1b; --color-fg-muted: #5f5e5a; --color-bg: #fbfaf7; --color-panel: #f3f1ec; --color-border-line: #e2dfd7;
+  --color-ok: #2f8a5b; --color-warn: #c99512; --color-bad: #c2412d;
+  --font-anthropic-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-anthropic-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --cds-font-size-caption: 13px; --cds-font-size-body: 16px; --cds-font-size-heading: 21px; --cds-font-size-title: 32px;
+  --cds-font-weight-medium: 600;
+  --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 16px; --cds-gap-lg: 24px; --cds-gap-xl: 40px;
+  --cds-pad-lg: 18px; --cds-radius: 10px;
+  --cds-chart-grid: #ebe8e1; --cds-chart-axis: #b9b5ab; --cds-chart-reference: #8a867c; --cds-chart-status-critical: #c2412d;
+  --cds-text-secondary: #6b6a65; --cds-surface-popover: #fff; --cds-border: #dcd8ce; --cds-shadow-popover: 0 4px 16px rgba(0,0,0,.12);
+  --accent: #E74E7D;
+  --sunset: linear-gradient(110deg, #F2B64C 0%, #E9785A 50%, #E74E7D 100%);
+  --plum: #3A1D33;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-fg: #ecebe6; --color-fg-muted: #a9a79f; --color-bg: #191917; --color-panel: #23231f; --color-border-line: #36352f;
+    --color-ok: #4fb37f; --color-warn: #e0b23a; --color-bad: #e2694f;
+    --cds-chart-grid: #2e2d28; --cds-chart-axis: #55534b; --cds-chart-reference: #8f8b80; --cds-chart-status-critical: #e2694f;
+    --cds-text-secondary: #a19f97; --cds-surface-popover: #2a2a26; --cds-border: #3d3c36; --accent: #F07A9A;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--color-bg); color: var(--color-fg); font-family: var(--font-anthropic-sans); line-height: 1.55; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+nav.top { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--color-bg) 92%, transparent); backdrop-filter: blur(6px); border-bottom: 1px solid var(--color-border-line); }
+nav.top .wrap { display: flex; gap: 20px; align-items: center; height: 52px; overflow-x: auto; white-space: nowrap; }
+nav.top a { color: var(--color-fg-muted); text-decoration: none; font-size: 14px; }
+nav.top a:hover { color: var(--color-fg); }
+nav.top .brand { font-weight: 700; margin-right: auto; background: var(--sunset); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero { padding: 64px 0 48px; background: var(--sunset); color: var(--plum); }
+.hero .eyebrow, .hero .meta { color: rgba(58, 29, 51, .75); }
+.hero .meta b { color: var(--plum); }
+.hero p.lead { color: rgba(58, 29, 51, .88); }
+.eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: 12px; color: var(--color-fg-muted); font-weight: 600; }
+.hero h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: clamp(36px, 6vw, 60px); line-height: 1.05; margin: 12px 0 16px; }
+.hero p.lead { font-size: 19px; max-width: 760px; color: var(--color-fg-muted); margin: 0; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 22px; font-size: 14px; color: var(--color-fg-muted); }
+.meta b { color: var(--color-fg); font-weight: 600; }
+section.block { padding: 44px 0; border-top: 1px solid var(--color-border-line); }
+section.block > .wrap > h2 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 32px; margin: 0 0 8px; }
+section.block > .wrap > p.intro { color: var(--color-fg-muted); max-width: 760px; margin: 0 0 24px; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+.card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 20px; }
+.card h3 { margin: 0 0 6px; font-size: 17px; }
+.card p { margin: 0; color: var(--color-fg-muted); font-size: 15px; }
+.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; counter-reset: step; }
+.flow .step { position: relative; background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 16px; }
+.flow .step::before { counter-increment: step; content: counter(step); display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--sunset); color: #fff; font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+.flow .step h3 { margin: 0 0 4px; font-size: 15px; }
+.flow .step p { margin: 0; font-size: 14px; color: var(--color-fg-muted); }
+.flow .step .tag { display: inline-block; margin-top: 8px; font-size: 12px; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--color-border-line); color: var(--color-fg-muted); }
+.formula { font-family: var(--font-anthropic-serif); font-size: 22px; background: linear-gradient(var(--color-panel), var(--color-panel)) padding-box, var(--sunset) border-box; border: 2px solid transparent; border-radius: var(--cds-radius); padding: 18px 22px; margin: 0 0 20px; overflow-x: auto; }
+table.plain { border-collapse: collapse; width: 100%; font-size: 15px; }
+table.plain th, table.plain td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--color-border-line); vertical-align: top; }
+table.plain th { color: var(--color-fg-muted); font-weight: 600; font-size: 13px; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; align-items: start; }
+.demo-note { display: flex; gap: 10px; align-items: flex-start; background: var(--color-panel); border: 1px dashed var(--color-border-line); border-radius: var(--cds-radius); padding: 12px 16px; font-size: 14px; color: var(--color-fg-muted); margin-bottom: 24px; }
+.demo-frame { border: 1px solid var(--color-border-line); border-radius: 14px; padding: 28px; background: var(--color-bg); box-shadow: 0 1px 0 var(--color-border-line), 0 12px 40px rgba(0,0,0,.05); }
+pre.tree { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 16px 20px; overflow-x: auto; font-size: 14px; line-height: 1.6; margin: 0; }
+ul.clean { margin: 0; padding-left: 1.1em; }
+ul.clean li { margin: 6px 0; }
+footer { padding: 36px 0 56px; border-top: 3px solid transparent; border-image: var(--sunset) 1; color: var(--color-fg-muted); font-size: 14px; }
+/* dashboard helpers normally provided by the dashboard host */
+.dash-select { font: inherit; font-size: 14px; color: var(--color-fg); background-color: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 8px; padding: 6px 10px; max-width: 100%; }
+.dash-skeleton { color: transparent !important; background: var(--color-panel); border-radius: 4px; }
+@media (max-width: 600px) { .demo-frame { padding: 16px; } .wrap { padding: 0 16px; } }
+</style>
+</head>
+<body>
+<nav class="top"><div class="wrap">
+  <span class="brand">Packaging Price Watch</span>
+  <a href="#problem">Problem</a><a href="#how">How it works</a><a href="#rules">Review rules</a><a href="#demo">Live demo</a><a href="#course">Course link</a><a href="#next">Next steps</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <div class="eyebrow">Final project · The New Frontiers of AI: From Perception to Agentic Intelligence</div>
+  <h1>An AI agent that tells procurement when a packaging contract price has to change.</h1>
+  <p class="lead">Every morning a scheduled agent reads the internal packaging raw-material index, replays each supplier contract's review rules, and updates a shared dashboard: which prices go up or down, from when, and why.</p>
+  <div class="meta"><span><b>Hidayah Ahmad</b></span><span>MDBM, Hochschule Pforzheim</span><span>Prof. Dr. Pin Luarn · WiSe 2026/27</span><span>Demo data: Oct 2026 index data, review cycle Nov 2026</span></div>
+</div></header>
+
+<section class="block" id="problem"><div class="wrap">
+  <h2>The problem</h2>
+  <p class="intro">Packaging supply contracts often contain a price adjustment clause tied to raw-material prices. Checking them by hand every month is slow and easy to get wrong.</p>
+  <div class="grid3">
+    <div class="card"><h3>Many contracts, different rules</h3><p>Each contract has its own material mix (e.g. 60% paper, 40% plastic), base period, review frequency and trigger (e.g. ±5%).</p></div>
+    <div class="card"><h3>Monthly data, moving baselines</h3><p>Index values arrive early each month. After every adjustment the base period moves, so the comparison changes over time.</p></div>
+    <div class="card"><h3>Missed reviews cost money</h3><p>A missed price increase strains the supplier relationship; a missed decrease means overpaying. The team needs one shared view, every day.</p></div>
+  </div>
+</div></section>
+
+<section class="block" id="how"><div class="wrap">
+  <h2>How it works</h2>
+  <p class="intro">The agent orchestrates the work; the arithmetic is done in tested code, because language models are strong at language but not always accurate with numbers.</p>
+  <div class="flow">
+    <div class="step"><h3>Internal sheets</h3><p>Monthly index tracker per material, and one row per contract with composition and rules.</p><span class="tag">Excel / Google Sheets</span></div>
+    <div class="step"><h3>Scheduled agent</h3><p>Wakes up every morning at 07:43 and runs the review on the latest data.</p><span class="tag">Claude scheduled task</span></div>
+    <div class="step"><h3>Review engine</h3><p>Python replays every review window per contract and validates the data. 20 unit tests, one per rule.</p><span class="tag">review_engine.py</span></div>
+    <div class="step"><h3>Shared dashboard</h3><p>Status per contract, price changes to agree, drivers per material, index trends.</p><span class="tag">Dashboard artifact</span></div>
+    <div class="step"><h3>Human approval</h3><p>For each new adjustment the agent drafts a supplier notice. A person checks and sends it.</p><span class="tag">Human in the loop</span></div>
+  </div>
+</div></section>
+
+<section class="block" id="rules"><div class="wrap">
+  <h2>Review rules</h2>
+  <p class="intro">Agreed with the business side and implemented one-to-one in the engine.</p>
+  <div class="formula">Change = Σ share<sub>m</sub> × ( window average<sub>m</sub> ÷ base average<sub>m</sub> − 1 )</div>
+  <div class="two">
+    <div class="tablewrap"><table class="plain">
+      <tr><th>Rule</th><th>Decision</th></tr>
+      <tr><td>Window start</td><td>Contract start month; a mid-month start counts from the 1st</td></tr>
+      <tr><td>Window length</td><td>Quarterly 3, bi-annual 6, annual 12 months</td></tr>
+      <tr><td>Trigger</td><td>|change| ≥ trigger, up or down (exactly the trigger counts)</td></tr>
+      <tr><td>Adjustment</td><td>Price moves by the full change; the window becomes the new base</td></tr>
+      <tr><td>No trigger</td><td>Base stays; next window is compared with the same base</td></tr>
+      <tr><td>Timing</td><td>Window ends in M → index arrives early M+1 → review in M+1 → new price from the 1st of M+2</td></tr>
+      <tr><td>Watch</td><td>Running window already at ≥ 80% of the trigger</td></tr>
+    </table></div>
+    <div>
+      <h3 style="margin:0 0 8px">Worked example</h3>
+      <p style="margin:0 0 12px;color:var(--color-fg-muted)">60% paper / 40% plastic, base Jan–Mar 2026 = 100, contract starts July 2026, quarterly, ±5%.</p>
+      <div class="tablewrap"><table class="plain">
+        <tr><th>Window</th><th>Paper</th><th>Plastic</th><th>Change</th><th>Result</th></tr>
+        <tr><td>Jul–Sep 2026</td><td>104</td><td>102</td><td>0.6×4% + 0.4×2% = <b>+3.2%</b></td><td>No change, base stays Jan–Mar</td></tr>
+        <tr><td>Oct–Dec 2026</td><td>107</td><td>104</td><td>0.6×7% + 0.4×4% = <b>+5.8%</b></td><td>Price +5.8% from 1 Feb 2027; new base Oct–Dec</td></tr>
+      </table></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="block" id="demo"><div class="wrap">
+  <h2>Live demo</h2>
+  <p class="intro">The real dashboard, running on a snapshot of the latest review. Click a card or a table row to see what drives a contract's change.</p>
+  <div class="demo-note">ⓘ <span>All contracts, suppliers and index values here are made up for the demo. In use, the dashboard is refreshed every morning by the scheduled agent.</span></div>
+  <div class="demo-frame"><div id="dash-root">
+<style>
+.ppw { --ppw-sun: #F2B64C; --ppw-coral: #E9785A; --ppw-pink: #E74E7D; --ppw-sunset: linear-gradient(90deg, #F2B64C 0%, #E9785A 50%, #E74E7D 100%); display: flex; flex-direction: column; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); color: var(--color-fg); }
+.ppw h1.ppw-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; background: var(--ppw-sunset); -webkit-background-clip: text; background-clip: text; color: transparent; width: fit-content; }
+.ppw-band { height: 4px; border-radius: 4px; background: var(--ppw-sunset); max-width: 160px; margin-top: var(--cds-gap-sm); }
+.ppw h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0 0 var(--cds-gap-xs); }
+.ppw h3 { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); margin: 0 0 var(--cds-gap-xs); }
+.ppw p { margin: 0; }
+.ppw-muted { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.ppw-lede { font-size: var(--cds-font-size-body); margin-top: var(--cds-gap-sm) !important; max-width: 70ch; }
+.ppw-sub { margin-top: var(--cds-gap-xs) !important; }
+.ppw-num { font-variant-numeric: tabular-nums; }
+.ppw-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); min-width: 0; }
+.ppw-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--cds-gap-md); }
+.ppw-tile .ppw-big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.1; display: block; margin-top: var(--cds-gap-xs); font-variant-numeric: tabular-nums; }
+.ppw-tile .ppw-tlabel { display: flex; align-items: center; gap: var(--cds-gap-xs); font-weight: var(--cds-font-weight-medium); }
+.ppw-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+.ppw-dot.s-adjust { background: var(--color-bad); }
+.ppw-dot.s-watch { background: var(--color-warn); }
+.ppw-dot.s-ok { background: var(--color-ok); }
+.ppw-dot.s-notstarted, .ppw-dot.s-dataerror { background: var(--color-fg-muted); }
+.ppw-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--cds-gap-md); margin-top: var(--cds-gap-sm); min-height: 120px; }
+.ppw-acard { cursor: pointer; display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
+.ppw-acard:hover, .ppw-acard:focus-visible { border-color: var(--ppw-pink); outline: none; }
+.ppw-acard .ppw-row { display: flex; justify-content: space-between; gap: var(--cds-gap-sm); align-items: baseline; flex-wrap: wrap; }
+.ppw-acard .ppw-delta { font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; background: var(--ppw-sunset); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.ppw-pill { display: inline-flex; align-items: center; gap: 6px; font-size: var(--cds-font-size-caption); font-weight: var(--cds-font-weight-medium); white-space: nowrap; }
+.ppw-toolbar { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; margin: var(--cds-gap-sm) 0; }
+.ppw-tablewrap { overflow-x: auto; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); }
+.ppw-table { border-collapse: collapse; width: 100%; font-size: var(--cds-font-size-caption); }
+.ppw-table th, .ppw-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--color-border-line); vertical-align: top; }
+.ppw-table th { font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); white-space: nowrap; background: var(--color-panel); }
+.ppw-table td.n, .ppw-table th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ppw-table tbody tr { cursor: pointer; }
+.ppw-table tbody tr:hover { background: var(--color-panel); }
+.ppw-table tbody tr.sel { background: var(--color-panel); box-shadow: inset 3px 0 0 var(--ppw-pink); }
+.ppw-table td.why { min-width: 260px; color: var(--color-fg-muted); }
+.ppw-table td.basis { min-width: 150px; }
+.ppw-grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--cds-gap-md); margin-top: var(--cds-gap-sm); }
+.ppw-chart { position: relative; min-height: 220px; }
+.ppw-chart svg { display: block; overflow: visible; }
+.ppw-chart text { font-size: 11px; fill: var(--cds-text-secondary); font-family: var(--font-anthropic-sans); }
+.ppw-chart .tick text { fill: var(--cds-text-secondary); font-size: 11px; }
+.ppw-chart .tick line { stroke: var(--cds-chart-grid); }
+.ppw-chart .domain { stroke: var(--cds-chart-axis); }
+.ppw-chart .val { fill: var(--color-fg); }
+.ppw-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: var(--cds-radius); padding: 8px 10px; font-size: var(--cds-font-size-caption); min-width: 150px; max-width: 260px; z-index: 5; }
+.ppw-tip b { display: block; margin-bottom: 4px; }
+.ppw-tip .k { color: var(--cds-text-secondary); }
+.ppw-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm) var(--cds-gap-md); margin: var(--cds-gap-sm) 0; font-size: var(--cds-font-size-caption); }
+.ppw-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.ppw-legend i { width: 14px; height: 2px; display: inline-block; }
+.ppw-legend .dim { opacity: 0.4; }
+.ppw-reason { margin-top: var(--cds-gap-xs) !important; max-width: 80ch; }
+.ppw details summary { cursor: pointer; font-weight: var(--cds-font-weight-medium); }
+.ppw details ul { margin: var(--cds-gap-sm) 0 0; padding-left: 1.2em; line-height: 1.6; }
+@media print { .ppw-toolbar select { display: none; } }
+</style>
+
+<div class="ppw">
+  <header id="overview">
+    <h1 class="ppw-title">Packaging Price Watch</h1>
+    <div class="ppw-band"></div>
+    <p class="ppw-lede" data-draw="lede">—</p>
+    <p class="ppw-sub ppw-muted">Index data up to <b data-draw="latest" data-source="run" data-field="latest_index_label" data-row="0">—</b> · review cycle <b data-draw="cycle" data-source="run" data-field="review_cycle" data-row="0">—</b> · demo contracts and simulated index values</p>
+  </header>
+
+  <section class="ppw-tiles" id="status-tiles">
+    <div class="ppw-card ppw-tile" id="tile-adjust">
+      <span class="ppw-tlabel"><span class="ppw-dot s-adjust"></span>Adjust price</span>
+      <span class="ppw-big" data-draw="n-adjust" data-source="run" data-field="count_adjust" data-row="0">—</span>
+      <p class="ppw-muted">Reviewed this cycle, trigger reached</p>
+    </div>
+    <div class="ppw-card ppw-tile" id="tile-watch">
+      <span class="ppw-tlabel"><span class="ppw-dot s-watch"></span>Watch</span>
+      <span class="ppw-big" data-draw="n-watch" data-source="run" data-field="count_watch" data-row="0">—</span>
+      <p class="ppw-muted">Running window at 80% of the trigger or more</p>
+    </div>
+    <div class="ppw-card ppw-tile" id="tile-ok">
+      <span class="ppw-tlabel"><span class="ppw-dot s-ok"></span>OK</span>
+      <span class="ppw-big" data-draw="n-ok" data-source="run" data-field="count_ok" data-row="0">—</span>
+      <p class="ppw-muted">Within the trigger, no action</p>
+    </div>
+    <div class="ppw-card ppw-tile" id="tile-notstarted">
+      <span class="ppw-tlabel"><span class="ppw-dot s-notstarted"></span>Not started</span>
+      <span class="ppw-big" data-draw="n-notstarted" data-source="run" data-field="count_not_started" data-row="0">—</span>
+      <p class="ppw-muted">Contract starts after the latest index month</p>
+    </div>
+  </section>
+
+  <section id="action-needed">
+    <h2>Price changes to agree with suppliers</h2>
+    <p class="ppw-muted">Reviews this cycle that reached the trigger. The new price applies from <b data-draw="eff" data-source="run" data-field="effective_from" data-row="0">—</b>. Select a card to see what drives it.</p>
+    <div class="ppw-cards" data-draw="adjust-cards" data-source="status"></div>
+  </section>
+
+  <section id="contracts">
+    <h2>All contracts</h2>
+    <p class="ppw-muted">Change = weighted raw-material change against the contract's current base period. Select a row for details.</p>
+    <div class="ppw-toolbar">
+      <select class="dash-select" id="status-filter" aria-label="Filter by status">
+        <option value="">All statuses</option>
+        <option value="Adjust">Adjust</option>
+        <option value="Watch">Watch</option>
+        <option value="OK">OK</option>
+        <option value="Not started">Not started</option>
+      </select>
+    </div>
+    <div class="ppw-tablewrap">
+      <table class="ppw-table" id="contract-table" data-source="status" data-row-key="id">
+        <thead><tr>
+          <th data-field="status">Status</th>
+          <th data-field="id">Contract</th>
+          <th data-field="supplier">Supplier</th>
+          <th data-field="item">Item</th>
+          <th data-field="frequency">Review</th>
+          <th class="n" data-field="trigger_pct">Trigger</th>
+          <th class="n" data-field="delta_pct">Change</th>
+          <th data-field="delta_basis">Based on</th>
+          <th class="n" data-field="current_price">Current price</th>
+          <th class="n" data-field="new_price">New price</th>
+          <th data-field="current_base">Current base</th>
+          <th data-field="next_review">Next review</th>
+          <th data-field="reason">Why</th>
+        </tr></thead>
+        <tbody data-draw="table"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="contract-detail">
+    <h2>Contract detail</h2>
+    <div class="ppw-toolbar">
+      <select class="dash-select" data-draw="pick" aria-label="Contract" data-source="status"></select>
+    </div>
+    <p class="ppw-reason" data-draw="detail-reason" data-source="status">—</p>
+    <div class="ppw-grid2">
+      <div class="ppw-card" id="breakdown-card">
+        <h3>What drives the change</h3>
+        <p class="ppw-muted" data-draw="focus-label" data-source="detail">—</p>
+        <div class="ppw-chart" data-draw="breakdown" data-source="detail status"></div>
+      </div>
+      <div class="ppw-card" id="history-card">
+        <h3>Change at each review vs trigger</h3>
+        <p class="ppw-muted">Dashed lines are the ± trigger. Pink bars triggered a price change, orange bars stayed within it, and the outlined bar is the running window so far.</p>
+        <div class="ppw-chart" data-draw="historychart" data-source="history status"></div>
+      </div>
+    </div>
+    <h3 style="margin-top: var(--cds-gap-md)">Review history</h3>
+    <div class="ppw-tablewrap">
+      <table class="ppw-table" id="history-table" data-source="history" data-row-key="id,cycle_no">
+        <thead><tr>
+          <th data-field="window">Window</th>
+          <th data-field="base">Compared with base</th>
+          <th class="n" data-field="delta_pct">Change</th>
+          <th data-field="result">Result</th>
+          <th data-field="review_label">Reviewed</th>
+          <th data-field="effective_from">New price from</th>
+          <th class="n" data-field="price_before">Price before</th>
+          <th class="n" data-field="price_after">Price after</th>
+        </tr></thead>
+        <tbody data-draw="histtable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="index-trends">
+    <h2>Raw-material index trend</h2>
+    <p class="ppw-muted">Internal packaging index tracker, index points (Jan 2025 = 100). Materials of the selected contract are highlighted.</p>
+    <div class="ppw-legend" data-draw="legend" data-source="index"></div>
+    <div class="ppw-chart" style="min-height: 300px" data-draw="indexchart" data-source="index"></div>
+  </section>
+
+  <section id="checks">
+    <h2>Data checks</h2>
+    <p data-draw="checks" data-source="checks">—</p>
+    <p class="ppw-muted" style="margin-top: var(--cds-gap-xs)">Status changes since the previous run: <span data-draw="changes" data-source="run" data-field="changes" data-row="0">—</span></p>
+  </section>
+
+  <details id="how-it-works">
+    <summary>How the review works</summary>
+    <ul>
+      <li>Each contract is reviewed in windows that start in its contract start month (a mid-month start counts from the 1st). Window length: quarterly 3 months, bi-annual 6, annual 12.</li>
+      <li>Change = sum over materials of share × (window average ÷ base average − 1), each material against its own base average.</li>
+      <li>If the change is at least the trigger, up or down (hitting it exactly counts), the price changes by the full change and that window becomes the new base period. Otherwise the base stays.</li>
+      <li>A window ending in month M is reviewed in M+1, once M's index is published, and a new price applies from the 1st of M+2.</li>
+      <li>Watch means the window still running is already at 80% of the trigger or more, based on the months published so far.</li>
+      <li>The calculation runs in code (review_engine.py) every day; the dashboard shows its results.</li>
+    </ul>
+  </details>
+</div>
+
+<script>
+window.ppw = window.ppw || { sel: null, filter: '' };
+window.PPW_SERIES = ['#E74E7D', '#E08A1E', '#7A3E9D', '#1F9C8A', '#3D6FD6', '#9E8A1A'];
+window.ppwGradient = function (svg, id) {
+  const g = svg.append('defs').append('linearGradient').attr('id', id).attr('x1', '0%').attr('x2', '100%');
+  [['0%', '#F2B64C'], ['50%', '#E9785A'], ['100%', '#E74E7D']].forEach(([o, c]) => g.append('stop').attr('offset', o).attr('stop-color', c));
+  return 'url(#' + id + ')';
+};
+window.ppwFmt = {
+  pct: (v) => (v === null || v === undefined || v === '') ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(+v).toFixed(2) + '%',
+  pp: (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(+v).toFixed(2) + ' pp',
+  price: (v) => (v === null || v === undefined || v === '') ? '—' : d3.format(',.2f')(+v),
+  date: (s) => s ? d3.utcFormat('%-d %b %Y')(d3.utcParse('%Y-%m-%d')(s)) : '—',
+  cls: (s) => 's-' + String(s || '').toLowerCase().replace(/\s+/g, ''),
+};
+window.ppwSelect = function (id) {
+  window.ppw.sel = id;
+  ['table', 'pick', 'detail-reason', 'focus-label', 'breakdown', 'historychart', 'histtable', 'legend', 'indexchart'].forEach((n) => dash.draw(n));
+};
+window.ppwCurrent = function () {
+  const s = dash.data('status');
+  if (s.status !== 'ok' || !s.data.length) return null;
+  if (!window.ppw.sel || !s.data.some((r) => r.id === window.ppw.sel)) window.ppw.sel = s.data[0].id;
+  return s.data.find((r) => r.id === window.ppw.sel);
+};
+window.ppwTip = function (box) {
+  let tip = box.querySelector('.ppw-tip');
+  if (!tip) { tip = document.createElement('div'); tip.className = 'ppw-tip'; tip.hidden = true; box.appendChild(tip); }
+  return {
+    show(lines, x, y) {
+      tip.replaceChildren();
+      lines.forEach((l, i) => {
+        const el = document.createElement(i === 0 ? 'b' : 'div');
+        if (Array.isArray(l)) { const k = document.createElement('span'); k.className = 'k'; k.textContent = l[0] + ': '; el.append(k, document.createTextNode(l[1])); }
+        else el.textContent = l;
+        tip.appendChild(el);
+      });
+      tip.hidden = false;
+      const bw = box.clientWidth, tw = tip.offsetWidth, th = tip.offsetHeight;
+      let left = x + 14; if (left + tw > bw) left = Math.max(0, x - tw - 14);
+      tip.style.left = left + 'px'; tip.style.top = Math.max(0, y - th / 2) + 'px';
+    },
+    hide() { tip.hidden = true; },
+  };
+};
+</script>
+
+<script>
+const F = window.ppwFmt;
+function one(id) { const d = dash.data(id); return d.status === 'ok' && d.data.length ? d.data[0] : null; }
+function text(el, id, field, fmt) {
+  const r = one(id);
+  el.textContent = r ? (fmt ? fmt(r[field]) : String(r[field])) : '—';
+  el.classList.toggle('dash-skeleton', dash.data(id).status === 'loading');
+}
+dash.draw('latest', (el) => text(el, 'run', 'latest_index_label'));
+dash.draw('cycle', (el) => text(el, 'run', 'review_cycle'));
+dash.draw('eff', (el) => text(el, 'run', 'effective_from', F.date));
+dash.draw('changes', (el) => text(el, 'run', 'changes', (v) => v === 'none' ? 'none' : v));
+[['n-adjust', 'count_adjust'], ['n-watch', 'count_watch'], ['n-ok', 'count_ok'], ['n-notstarted', 'count_not_started']]
+  .forEach(([n, f]) => dash.draw(n, (el) => text(el, 'run', f)));
+
+dash.draw('lede', (el) => {
+  const r = one('run');
+  el.classList.toggle('dash-skeleton', dash.data('run').status === 'loading');
+  if (!r) { el.textContent = dash.data('run').status === 'error' ? 'The latest review run could not be loaded.' : '—'; return; }
+  const mk = (field, value) => { const b = document.createElement('b'); b.dataset.source = 'run'; b.dataset.field = field; b.dataset.row = '0'; b.textContent = value; return b; };
+  const parts = [];
+  const a = +r.count_adjust, w = +r.count_watch;
+  if (a > 0) parts.push(mk('count_adjust', a), document.createTextNode(a === 1 ? ' contract needs a price change from ' : ' contracts need a price change from '), mk('effective_from', F.date(r.effective_from)));
+  else parts.push(document.createTextNode('No contract needs a price change this cycle'));
+  if (w > 0) parts.push(document.createTextNode(', and '), mk('count_watch', w), document.createTextNode(w === 1 ? ' is close to its trigger.' : ' are close to their trigger.'));
+  else parts.push(document.createTextNode('. No contract is close to its trigger.'));
+  el.replaceChildren(...parts);
+});
+
+dash.draw('adjust-cards', (el) => {
+  const s = dash.data('status');
+  el.classList.toggle('dash-skeleton', s.status === 'loading');
+  if (s.status !== 'ok') { el.replaceChildren(); if (s.status === 'error') el.textContent = 'Contract results could not be loaded.'; return; }
+  const rows = s.data.filter((r) => r.status === 'Adjust');
+  if (!rows.length) { const p = document.createElement('p'); p.className = 'ppw-muted'; p.textContent = 'No price changes this cycle.'; el.replaceChildren(p); return; }
+  el.replaceChildren(...rows.map((r) => {
+    const card = document.createElement('div');
+    card.className = 'ppw-card ppw-acard'; card.tabIndex = 0; card.id = 'adjust-' + r.id;
+    const m = (tag, field, value, cls) => { const e = document.createElement(tag); e.dataset.source = 'status'; e.dataset.field = field; e.dataset.where = 'id=' + encodeURIComponent(r.id); e.textContent = value; if (cls) e.className = cls; return e; };
+    const top = document.createElement('div'); top.className = 'ppw-row';
+    const idl = document.createElement('span'); idl.append(m('b', 'id', r.id), document.createTextNode(' · '), m('span', 'supplier', r.supplier));
+    top.append(idl, m('span', 'delta_pct', F.pct(r.delta_pct), 'ppw-delta'));
+    const item = m('div', 'item', r.item, 'ppw-muted');
+    const price = document.createElement('div'); price.className = 'ppw-num';
+    price.append(m('span', 'current_price', F.price(r.current_price)), document.createTextNode(' → '), m('b', 'new_price', F.price(r.new_price)), document.createTextNode(' ' + (r.unit || '')));
+    const basis = m('div', 'delta_basis', r.delta_basis + ' vs base ' + r.current_base, 'ppw-muted');
+    card.append(top, item, price, basis);
+    card.addEventListener('click', () => { window.ppwSelect(r.id); document.getElementById('contract-detail')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+    card.addEventListener('keydown', (e) => { if (e.key === 'Enter') card.click(); });
+    return card;
+  }));
+});
+
+function pill(status) {
+  const p = document.createElement('span'); p.className = 'ppw-pill';
+  const d = document.createElement('span'); d.className = 'ppw-dot ' + F.cls(status);
+  p.append(d, document.createTextNode(status)); return p;
+}
+
+dash.draw('table', (tb) => {
+  const s = dash.data('status');
+  if (s.status !== 'ok') { tb.replaceChildren(); if (s.status === 'error') { const tr = tb.insertRow(); const td = tr.insertCell(); td.colSpan = 13; td.textContent = 'Contract results could not be loaded.'; } return; }
+  window.ppwCurrent();
+  const rows = s.data.filter((r) => !window.ppw.filter || r.status === window.ppw.filter);
+  tb.replaceChildren(...rows.map((r) => {
+    const tr = document.createElement('tr'); tr.dataset.key = encodeURIComponent(r.id);
+    if (r.id === window.ppw.sel) tr.className = 'sel';
+    const cells = [
+      [pill(r.status)], [r.id], [r.supplier], [r.item], [r.frequency], ['±' + (+r.trigger_pct) + '%', 'n'],
+      [F.pct(r.delta_pct), 'n'], [r.delta_basis, 'basis'], [F.price(r.current_price), 'n'], [F.price(r.new_price), 'n'],
+      [r.current_base], [r.next_review], [r.reason, 'why'],
+    ];
+    cells.forEach(([v, cls]) => { const td = tr.insertCell(); if (cls) td.className = cls; if (v instanceof Node) td.appendChild(v); else td.textContent = v ?? '—'; });
+    tr.addEventListener('click', () => window.ppwSelect(r.id));
+    return tr;
+  }));
+});
+
+dash.draw('pick', (sel) => {
+  const s = dash.data('status');
+  if (s.status !== 'ok') { sel.replaceChildren(); return; }
+  window.ppwCurrent();
+  sel.replaceChildren(...s.data.map((r) => new Option(r.id + ' · ' + r.item + ' (' + r.status + ')', r.id)));
+  sel.value = window.ppw.sel;
+  sel.onchange = () => window.ppwSelect(sel.value);
+});
+
+dash.draw('detail-reason', (el) => {
+  const r = window.ppwCurrent();
+  el.classList.toggle('dash-skeleton', dash.data('status').status === 'loading');
+  if (!r) { el.textContent = '—'; return; }
+  const b = document.createElement('b'); b.textContent = r.supplier + ', ' + r.item + ' — ';
+  const comp = document.createElement('span'); comp.className = 'ppw-muted';
+  comp.textContent = ' Composition: ' + r.composition + ' · ' + r.frequency + ' review · base ' + r.current_base + ' · ' + r.adjustments + ' adjustment(s) since start (' + F.pct(r.change_since_start_pct) + ').';
+  const reason = document.createElement('span'); reason.dataset.source = 'status'; reason.dataset.field = 'reason'; reason.dataset.where = 'id=' + encodeURIComponent(r.id); reason.textContent = r.reason;
+  el.replaceChildren(pill(r.status), document.createTextNode(' '), b, reason, comp);
+});
+
+dash.draw('focus-label', (el) => {
+  const r = window.ppwCurrent(); const d = dash.data('detail');
+  if (!r || d.status !== 'ok') { el.textContent = '—'; return; }
+  const rows = d.data.filter((x) => x.id === r.id);
+  el.textContent = rows.length ? rows[0].focus + '. Bars show each material’s contribution in percentage points; they add up to the change.' : 'No index data for this contract’s window yet.';
+});
+
+dash.draw('breakdown', (el) => {
+  const r = window.ppwCurrent(); const d = dash.data('detail');
+  el.querySelector('svg')?.remove();
+  if (!r || d.status !== 'ok') return;
+  const rows = d.data.filter((x) => x.id === r.id).map((x) => ({ ...x, contribution_pp: +x.contribution_pp }));
+  if (!rows.length) return;
+  const total = d3.sum(rows, (x) => x.contribution_pp);
+  const all = [...rows, { material: 'Total change', contribution_pp: total, total: true }];
+  const W = el.clientWidth || 320, rowH = 34, M = { t: 8, r: 70, b: 26, l: 0 };
+  const svg = d3.select(el).insert('svg', ':first-child').attr('width', W).attr('role', 'img')
+    .attr('aria-label', 'Contribution of each material to the change for ' + r.id);
+  const probe = svg.append('g').selectAll('text').data(all).join('text').text((x) => x.material);
+  M.l = Math.ceil(d3.max(probe.nodes(), (n) => n.getComputedTextLength()) || 80) + 12; probe.remove();
+  const H = M.t + M.b + rowH * all.length; svg.attr('height', H);
+  const trig = +r.trigger_pct;
+  const ext = Math.max(trig, d3.max(all, (x) => Math.abs(x.contribution_pp))) * 1.1;
+  const x = d3.scaleLinear().domain([-ext, ext]).range([M.l + 70, W - M.r]);
+  const y = d3.scaleBand().domain(all.map((x) => x.material)).range([M.t, H - M.b]).padding(0.3);
+  svg.append('g').attr('transform', `translate(0,${H - M.b})`).call(d3.axisBottom(x).ticks(Math.max(2, Math.floor((W - M.l - M.r) / 70))).tickFormat((v) => v + ''))
+    .call((g) => g.selectAll('.tick line').attr('y1', -(H - M.t - M.b)).style('stroke', 'var(--cds-chart-grid)'));
+  [-trig, trig].forEach((t) => svg.append('line').attr('x1', x(t)).attr('x2', x(t)).attr('y1', M.t).attr('y2', H - M.b)
+    .style('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3'));
+  svg.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', M.t).attr('y2', H - M.b).style('stroke', 'var(--cds-chart-axis)');
+  const grad = window.ppwGradient(svg, 'ppw-sunset-bd');
+  const tip = window.ppwTip(el);
+  const g = svg.append('g').selectAll('g').data(all).join('g');
+  g.append('text').attr('x', M.l - 8).attr('y', (v) => y(v.material) + y.bandwidth() / 2).attr('dy', '0.35em').attr('text-anchor', 'end')
+    .style('font-weight', (v) => v.total ? 600 : null).style('fill', 'var(--color-fg)').text((v) => v.material);
+  g.append('rect').attr('x', (v) => Math.min(x(0), x(v.contribution_pp))).attr('y', (v) => y(v.material))
+    .attr('width', (v) => Math.max(1, Math.abs(x(v.contribution_pp) - x(0)))).attr('height', y.bandwidth()).attr('rx', 3)
+    .style('fill', (v) => v.total ? 'var(--color-fg)' : grad);
+  g.append('text').attr('class', 'val').attr('x', (v) => v.contribution_pp >= 0 ? x(v.contribution_pp) + 6 : x(v.contribution_pp) - 6)
+    .attr('text-anchor', (v) => v.contribution_pp >= 0 ? 'start' : 'end')
+    .attr('y', (v) => y(v.material) + y.bandwidth() / 2).attr('dy', '0.35em').text((v) => v.total ? F.pct(v.contribution_pp) : F.pp(v.contribution_pp));
+  g.append('rect').attr('x', 0).attr('width', W).attr('y', (v) => y(v.material) - 4).attr('height', y.bandwidth() + 8).style('fill', 'transparent')
+    .on('mousemove', (ev, v) => {
+      const [px, py] = d3.pointer(ev, el);
+      tip.show(v.total ? ['Total change', ['Weighted change', F.pct(v.contribution_pp)], ['Trigger', '±' + trig + '%']]
+        : [v.material, ['Share', (+v.share_pct).toFixed(0) + '%'], ['Base average', (+v.base_avg).toFixed(2)], ['Window average', (+v.window_avg).toFixed(2)],
+           ['Material change', F.pct(v.change_pct)], ['Contribution', F.pp(v.contribution_pp)]], px, py);
+    }).on('mouseleave', () => tip.hide());
+});
+
+dash.draw('historychart', (el) => {
+  const r = window.ppwCurrent(); const h = dash.data('history');
+  el.querySelector('svg')?.remove();
+  const old = el.querySelector('.ppw-empty'); if (old) old.remove();
+  if (!r || h.status !== 'ok') return;
+  const rows = h.data.filter((x) => x.id === r.id).map((x) => ({ label: x.window, v: +x.delta_pct, adj: x.result === 'Adjusted', running: false, base: x.base, reviewed: x.review_label, eff: x.effective_from }));
+  if (String(r.delta_basis || '').startsWith('Running') && r.delta_pct !== null) rows.push({ label: r.running_window + ' (so far)', v: +r.delta_pct, running: true, base: r.current_base, months: r.months_in_window });
+  if (!rows.length) { const p = document.createElement('p'); p.className = 'ppw-muted ppw-empty'; p.textContent = 'No reviews yet: ' + r.reason; el.appendChild(p); return; }
+  const W = el.clientWidth || 320, H = 230, M = { t: 16, r: 64, b: 44, l: 44 };
+  const trig = +r.trigger_pct;
+  const ext = Math.max(trig, d3.max(rows, (x) => Math.abs(x.v))) * 1.15;
+  const svg = d3.select(el).insert('svg', ':first-child').attr('width', W).attr('height', H).attr('role', 'img')
+    .attr('aria-label', 'Weighted change at each review window for ' + r.id + ' against the ±' + trig + '% trigger');
+  const x = d3.scaleBand().domain(rows.map((x) => x.label)).range([M.l, W - M.r]).padding(0.3);
+  const y = d3.scaleLinear().domain([-ext, ext]).range([H - M.b, M.t]).nice();
+  svg.append('g').attr('transform', `translate(${M.l},0)`).call(d3.axisLeft(y).ticks(5).tickFormat((v) => v + '%'))
+    .call((g) => g.selectAll('.tick line').attr('x2', W - M.l - M.r).style('stroke', 'var(--cds-chart-grid)')).call((g) => g.select('.domain').remove());
+  const short = (s) => s.replace(' (so far)', '*').replace(/\s20(\d\d)/g, " '$1");
+  const step = Math.ceil(rows.length / Math.max(1, Math.floor((W - M.l - M.r) / 64)));
+  svg.append('g').attr('transform', `translate(0,${H - M.b})`).call(d3.axisBottom(x).tickFormat((v, i) => i % step ? '' : short(v)).tickSize(0))
+    .call((g) => g.select('.domain').remove()).selectAll('text').attr('dy', '1.2em');
+  svg.append('line').attr('x1', M.l).attr('x2', W - M.r).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--cds-chart-axis)');
+  [-trig, trig].forEach((t) => {
+    svg.append('line').attr('x1', M.l).attr('x2', W - M.r).attr('y1', y(t)).attr('y2', y(t)).style('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
+    svg.append('text').attr('x', W - M.r + 6).attr('y', y(t)).attr('dy', '0.35em').attr('text-anchor', 'start').text((t > 0 ? '+' : '−') + trig + '% trigger');
+  });
+  const tip = window.ppwTip(el);
+  const g = svg.append('g').selectAll('g').data(rows).join('g');
+  g.append('rect').attr('x', (v) => x(v.label)).attr('width', x.bandwidth()).attr('y', (v) => Math.min(y(0), y(v.v))).attr('height', (v) => Math.max(1, Math.abs(y(v.v) - y(0)))).attr('rx', 3)
+    .style('fill', (v) => v.running ? 'transparent' : v.adj ? '#E74E7D' : '#F2B64C')
+    .style('stroke', (v) => v.running ? '#E9785A' : null).style('stroke-width', (v) => v.running ? 2 : null).attr('stroke-dasharray', (v) => v.running ? '3 2' : null);
+  if (rows.length <= 8) g.append('text').attr('class', 'val').attr('text-anchor', 'middle').attr('x', (v) => x(v.label) + x.bandwidth() / 2)
+    .attr('y', (v) => v.v >= 0 ? y(v.v) - 4 : y(v.v) + 12).text((v) => F.pct(v.v));
+  g.append('rect').attr('x', (v) => x(v.label) - x.step() * x.paddingInner() / 2).attr('width', x.step()).attr('y', M.t).attr('height', H - M.t - M.b).style('fill', 'transparent')
+    .on('mousemove', (ev, v) => {
+      const [px, py] = d3.pointer(ev, el);
+      tip.show(v.running ? [v.label, ['Change so far', F.pct(v.v)], ['Months published', v.months], ['Against base', v.base]]
+        : [v.label, ['Change', F.pct(v.v)], ['Against base', v.base], ['Reviewed', v.reviewed], ['Result', v.adj ? 'Adjusted, new price from ' + F.date(v.eff) : 'No change']], px, py);
+    }).on('mouseleave', () => tip.hide());
+});
+
+dash.draw('histtable', (tb) => {
+  const r = window.ppwCurrent(); const h = dash.data('history');
+  if (!r || h.status !== 'ok') { tb.replaceChildren(); return; }
+  const rows = h.data.filter((x) => x.id === r.id);
+  if (!rows.length) { const tr = document.createElement('tr'); const td = tr.insertCell(); td.colSpan = 8; td.className = 'ppw-muted'; td.textContent = 'No completed review windows yet.'; tb.replaceChildren(tr); return; }
+  tb.replaceChildren(...rows.map((x) => {
+    const tr = document.createElement('tr'); tr.dataset.key = encodeURIComponent(x.id) + ',' + encodeURIComponent(x.cycle_no);
+    [[x.window], [x.base], [F.pct(x.delta_pct), 'n'], [x.result], [x.review_label], [x.effective_from ? F.date(x.effective_from) : '—'], [F.price(x.price_before), 'n'], [F.price(x.price_after), 'n']]
+      .forEach(([v, cls]) => { const td = tr.insertCell(); if (cls) td.className = cls; td.textContent = v; });
+    return tr;
+  }));
+});
+
+function materials() {
+  const d = dash.data('index');
+  return d.status === 'ok' ? (d.columns || Object.keys(d.data[0] || {})).filter((c) => c !== 'month') : [];
+}
+function contractMaterials() {
+  const r = window.ppwCurrent(); const d = dash.data('detail');
+  if (!r || d.status !== 'ok') return null;
+  const m = d.data.filter((x) => x.id === r.id).map((x) => x.material);
+  return m.length ? new Set(m) : null;
+}
+
+dash.draw('legend', (el) => {
+  const mats = materials(); const hi = contractMaterials();
+  el.replaceChildren(...mats.map((m, i) => {
+    const s = document.createElement('span'); if (hi && !hi.has(m)) s.className = 'dim';
+    const sw = document.createElement('i'); sw.style.background = window.PPW_SERIES[i % window.PPW_SERIES.length];
+    s.append(sw, document.createTextNode(m)); return s;
+  }));
+});
+
+dash.draw('indexchart', (el) => {
+  const d = dash.data('index');
+  el.querySelector('svg')?.remove();
+  el.classList.toggle('dash-skeleton', d.status === 'loading');
+  if (d.status !== 'ok') return;
+  const mats = materials(); const hi = contractMaterials();
+  const parse = d3.utcParse('%Y-%m');
+  const rows = d.data.map((r) => ({ date: parse(r.month), r }));
+  const W = el.clientWidth || 600, H = 300, M = { t: 12, r: 28, b: 28, l: 40 };
+  const vals = rows.flatMap((x) => mats.map((m) => +x.r[m]));
+  const x = d3.scaleUtc().domain(d3.extent(rows, (x) => x.date)).range([M.l, W - M.r]);
+  const y = d3.scaleLinear().domain(d3.extent(vals)).nice().range([H - M.b, M.t]);
+  const svg = d3.select(el).insert('svg', ':first-child').attr('width', W).attr('height', H).attr('role', 'img')
+    .attr('aria-label', 'Monthly index of ' + mats.length + ' packaging raw materials since ' + d3.utcFormat('%b %Y')(rows[0].date));
+  svg.append('g').attr('transform', `translate(${M.l},0)`).call(d3.axisLeft(y).ticks(5))
+    .call((g) => g.selectAll('.tick line').attr('x2', W - M.l - M.r).style('stroke', 'var(--cds-chart-grid)')).call((g) => g.select('.domain').remove());
+  svg.append('g').attr('transform', `translate(0,${H - M.b})`).call(d3.axisBottom(x).ticks(Math.max(2, Math.floor(W / 110))).tickFormat(d3.utcFormat('%b %Y')))
+    .call((g) => g.select('.domain').style('stroke', 'var(--cds-chart-axis)'));
+  mats.forEach((m, i) => {
+    svg.append('path').datum(rows).attr('fill', 'none').style('stroke', window.PPW_SERIES[i % window.PPW_SERIES.length]).attr('stroke-width', 2)
+      .attr('opacity', hi && !hi.has(m) ? 0.18 : 1)
+      .attr('d', d3.line().x((v) => x(v.date)).y((v) => y(+v.r[m])));
+  });
+  const tip = window.ppwTip(el);
+  const cross = svg.append('line').attr('y1', M.t).attr('y2', H - M.b).style('stroke', 'var(--cds-chart-reference)').attr('opacity', 0);
+  svg.append('rect').attr('x', M.l).attr('y', M.t).attr('width', W - M.l - M.r).attr('height', H - M.t - M.b).style('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const [px, py] = d3.pointer(ev, el);
+      const t = x.invert(px); const i = d3.bisector((v) => v.date).center(rows, t); const row = rows[i];
+      cross.attr('x1', x(row.date)).attr('x2', x(row.date)).attr('opacity', 1);
+      tip.show([d3.utcFormat('%B %Y')(row.date), ...mats.map((m) => [m, (+row.r[m]).toFixed(1)])], px, py);
+    }).on('mouseleave', () => { tip.hide(); cross.attr('opacity', 0); });
+});
+
+dash.draw('checks', (el) => {
+  const c = dash.data('checks');
+  el.classList.toggle('dash-skeleton', c.status === 'loading');
+  if (c.status !== 'ok') { el.textContent = c.status === 'error' ? 'Data checks could not be loaded.' : '—'; return; }
+  if (!c.data.length) { el.textContent = 'No issues: every month and material value in the index tracker is present, and every contract’s composition adds up to 100%.'; return; }
+  const ul = document.createElement('ul');
+  c.data.forEach((i) => { const li = document.createElement('li'); li.textContent = i.where + ' · ' + i.item + ': ' + i.message; ul.appendChild(li); });
+  el.replaceChildren(document.createTextNode(c.data.length + ' issue(s) to fix in the sheets:'), ul);
+});
+</script>
+
+<script>
+document.querySelectorAll('#status-filter').forEach((s) => s.addEventListener('change', () => { window.ppw.filter = s.value; dash.draw('table'); }));
+</script>
+  </div></div>
+</div></section>
+
+<section class="block" id="course"><div class="wrap">
+  <h2>What it uses from the course</h2>
+  <div class="tablewrap"><table class="plain">
+    <tr><th>Part of the project</th><th>Course topic</th></tr>
+    <tr><td>Agent that runs on a schedule and updates a dashboard</td><td>Scheduled tasks with multi-agent dashboards (Unit 5.2), personal AI agents (Unit 6)</td></tr>
+    <tr><td>Calculation in code, LLM for orchestration and drafting</td><td>Limits of plain LLMs; adding tools (Units 4–5)</td></tr>
+    <tr><td>Review rules packaged as a reusable SOP</td><td>Skills (Units 5.3 and 5.6)</td></tr>
+    <tr><td>Draft, then a person approves before anything is sent</td><td>Approval rules for agents (Unit 6: Muse, Cue)</td></tr>
+    <tr><td>Built and tested with an AI coding agent</td><td>AI coding agents (Unit 3, syllabus Unit 15)</td></tr>
+    <tr><td>Published on GitHub Pages</td><td>GitHub and personal webpage (Unit 0–1)</td></tr>
+  </table></div>
+</div></section>
+
+<section class="block" id="next"><div class="wrap">
+  <div class="two">
+    <div>
+      <h2 style="font-family:var(--font-anthropic-serif);font-weight:400;font-size:32px;margin:0 0 12px">Next steps</h2>
+      <ul class="clean">
+        <li><b>Google Sheets as the source</b>, so colleagues can update the index tracker without access to one laptop.</li>
+        <li><b>Supplier letters with a local LLM</b> (Ollama), keeping confidential contract prices inside the company.</li>
+        <li><b>Approval workflow</b> in n8n: notify the contract owner, collect the approval, then send.</li>
+        <li><b>Real index feeds</b> where a provider offers an API.</li>
+      </ul>
+    </div>
+    <div>
+      <h2 style="font-family:var(--font-anthropic-serif);font-weight:400;font-size:32px;margin:0 0 12px">Repository</h2>
+<pre class="tree">data/packaging_index_tracker.xlsx   monthly index per material
+data/contracts.xlsx                 contract details and rules
+review_engine.py                    the review calculation
+tests/test_review_engine.py         20 tests, one per rule
+make_demo_data.py                   builds the demo sheets
+build_showcase.py                   builds this page
+output/review_log.xlsx              results for Excel users
+dashboard/index.html                dashboard page</pre>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">Packaging Price Watch · Final project by Hidayah Ahmad · Hochschule Pforzheim, WiSe 2026/27 · Demo data only.</div></footer>
+
+<script>
+window.addEventListener('load', () => {
+  window.__drawAll();
+  let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(window.__drawAll, 120); });
+  if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', window.__drawAll);
+});
+</script>
+</body>
+</html>
